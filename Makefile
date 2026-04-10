@@ -18,6 +18,8 @@ LD = $(CXX)
 
 #User defined include/preprocessor flags and libraries
 
+LIBS += -lsocket
+
 #INCLUDES += -I/path/to/my/lib/include
 #INCLUDES += -I../mylib/public
 

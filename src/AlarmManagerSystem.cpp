@@ -11,6 +11,8 @@ int main()
 {
     pthread_t cli_thread;
     pthread_t notify_thread;
+    pthread_t server_thread;
+    pthread_t scheduler_thread;
 
     int chid = ChannelCreate(0);
 
@@ -37,9 +39,13 @@ int main()
 
     pthread_create(&notify_thread, &notify_attr, notificationtask, &chid);
     pthread_create(&cli_thread, &cli_attr, cli_loop, &chid);
+    pthread_create(&server_thread, NULL, tcp_server, &chid);
+    pthread_create(&scheduler_thread, NULL, scheduler, &chid);
 
     pthread_join(cli_thread, NULL);
     pthread_join(notify_thread, NULL);
+    pthread_join(server_thread, NULL);
+    pthread_join(scheduler_thread, NULL);
 
     return 0;
 }

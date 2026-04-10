@@ -74,35 +74,72 @@ void listalarm()
     pthread_mutex_unlock(&printmutex);
 }
 
-    void removealarm(int id)
+void removealarm(int id)
+{
+	pthread_mutex_lock(&alarmmutex);
+
+	if(id >= alarmcount)
     {
-        if(id >= alarmcount)
-        {
-            pthread_mutex_lock(&printmutex);
+		pthread_mutex_lock(&printmutex);
 
-            cout<<"Invalid alarm ID :()"<<endl;
-
-            pthread_mutex_unlock(&printmutex);
-            pthread_mutex_unlock(&alarmmutex);
-
-            return;
-        }
-
-        timer_delete(alarms[id].timer_id);
-
-        for(int i = id; i < alarmcount - 1; i++)
-        {
-            alarms[i] = alarms[i + 1];
-            alarms[i].id = i;
-        }
-
-        alarmcount--;
-
-        pthread_mutex_lock(&printmutex);
-
-        cout<<"Alarm "<<id<<" Removed"<<endl;
+        cout<<"Invalid alarm ID :()"<<endl;
 
         pthread_mutex_unlock(&printmutex);
-
         pthread_mutex_unlock(&alarmmutex);
+
+        return;
+    }
+
+	timer_delete(alarms[id].timer_id);
+
+	for(int i = id; i < alarmcount - 1; i++)
+	{
+		alarms[i] = alarms[i + 1];
+		alarms[i].id = i;
+	}
+
+	alarmcount--;
+
+	pthread_mutex_lock(&printmutex);
+
+	cout<<"Alarm "<<id<<" Removed"<<endl;
+
+	pthread_mutex_unlock(&printmutex);
+
+	pthread_mutex_unlock(&alarmmutex);
+}
+
+#include <iostream>
+#include <cstring>
+#include "Alarm.h"
+
+using namespace std;
+
+void handle_event(char *msg, int chid)
+{
+    cout << "[RECEIVED] " << msg << endl;
+
+    if(strcmp(msg, "SEATBELT_NOT_FASTENED") == 0)
+    {
+        createalarm(chid, 2, 0);
+    }
+    else if(strcmp(msg, "TEMP_OVERHEAT") == 0)
+    {
+        createalarm(chid, 2, 1);
+    }
+    else if(strcmp(msg, "FUEL_LOW") == 0)
+    {
+        createalarm(chid, 2, 2);
+    }
+    else if(strcmp(msg, "DOOR_OPEN") == 0)
+    {
+        createalarm(chid, 2, 3);
+    }
+    else if(strcmp(msg, "TEMP_NORMAL") == 0 ||
+            strcmp(msg, "FUEL_OK") == 0 ||
+            strcmp(msg, "DOOR_CLOSED") == 0 ||
+            strcmp(msg, "SEATBELT_OK") == 0)
+    {
+        cout << "[INFO] Normal condition: " << msg << endl;
+    }
 }
