@@ -2,6 +2,8 @@
 #include <signal.h>
 #include <sys/neutrino.h>
 #include "Alarm.h"
+#include <cstring>
+#include <unistd.h>
 
 using namespace std;
 
@@ -32,7 +34,16 @@ void createalarm(int chid, int seconds, int periodic)
 
     struct sigevent event;
 
-    SIGEV_PULSE_INIT(&event, ConnectAttach(0, 0, chid, _NTO_SIDE_CHANNEL, 0), SIGEV_PULSE_PRIO_INHERIT, 1, alarm -> id);
+    int coid = ConnectAttach(0, 0, chid, _NTO_SIDE_CHANNEL, 0);
+
+    if(coid == -1)
+    {
+        perror("ConnectAttach failed");   // DEBUG
+        return;
+    }
+
+    SIGEV_PULSE_INIT(&event, coid,
+                     SIGEV_PULSE_PRIO_INHERIT, 1, alarm->id);
 
     timer_create(CLOCK_REALTIME, &event, &alarm -> timer_id);
 
@@ -109,37 +120,37 @@ void removealarm(int id)
 	pthread_mutex_unlock(&alarmmutex);
 }
 
-#include <iostream>
-#include <cstring>
-#include "Alarm.h"
-
-using namespace std;
-
 void handle_event(char *msg, int chid)
 {
-    cout << "[RECEIVED] " << msg << endl;
+    cout<<"[PROCESSING] "<<msg<<endl;
 
-    if(strcmp(msg, "SEATBELT_NOT_FASTENED") == 0)
+    if(strcmp(msg, "Temp_Overheat") == 0)
     {
         createalarm(chid, 2, 0);
+        sleep(3);
+        removealarm(chid);
     }
-    else if(strcmp(msg, "TEMP_OVERHEAT") == 0)
+    else if(strcmp(msg, "Fuel_Low") == 0)
     {
-        createalarm(chid, 2, 1);
+        createalarm(chid, 5, 0);
+        sleep(6);
+        removealarm(chid);
     }
-    else if(strcmp(msg, "FUEL_LOW") == 0)
+    else if(strcmp(msg, "Door_Open") == 0)
     {
-        createalarm(chid, 2, 2);
+        createalarm(chid, 3, 0);
+        sleep(4);
+        removealarm(chid);
+
     }
-    else if(strcmp(msg, "DOOR_OPEN") == 0)
+    /*else if(strcmp(msg, "Seatbelt_Not_Fastened") == 0)
     {
-        createalarm(chid, 2, 3);
-    }
-    else if(strcmp(msg, "TEMP_NORMAL") == 0 ||
-            strcmp(msg, "FUEL_OK") == 0 ||
-            strcmp(msg, "DOOR_CLOSED") == 0 ||
-            strcmp(msg, "SEATBELT_OK") == 0)
+        createalarm(chid, 4, 0);
+        sleep(5);
+        removealarm(chid);
+    }*/
+    else
     {
-        cout << "[INFO] Normal condition: " << msg << endl;
+        cout<<"[INFO] Normal condition: "<<msg<<endl;
     }
 }

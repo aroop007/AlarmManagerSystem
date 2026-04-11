@@ -35,6 +35,7 @@ extern int alarmcount;
 
 extern pthread_mutex_t alarmmutex;
 extern pthread_mutex_t printmutex;
+extern pthread_mutex_t queuemutex;
 
 void createalarm(int chid, int seconds, int periodic);
 void listalarm();

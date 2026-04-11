@@ -16,16 +16,16 @@ pthread_mutex_t queuemutex = PTHREAD_MUTEX_INITIALIZER;
 
 int get_priority(const char *msg)
 {
-    if(strcmp(msg, "TEMP_OVERHEAT") == 0) return 1;
-    if(strcmp(msg, "FUEL_LOW") == 0) return 2;
-    if(strcmp(msg, "DOOR_OPEN") == 0) return 3;
-    if(strcmp(msg, "SEATBELT_NOT_FASTENED") == 0) return 4;
+    if(strcmp(msg, "Temp_Overheat") == 0) return 1;
+    if(strcmp(msg, "Fuel_Low") == 0) return 2;
+    if(strcmp(msg, "Door_Open") == 0) return 3;
+    //if(strcmp(msg, "Seatbelt_Not_Fastened") == 0) return 4;
     return 5;
 }
 
 void *tcp_server(void *arg)
 {
-    int chid = *(int*)arg;
+    //int chid = *(int*)arg;
 
     int server_fd, new_socket;
     struct sockaddr_in address;
@@ -60,7 +60,7 @@ void *tcp_server(void *arg)
         exit(EXIT_FAILURE);
     }
 
-    cout << "Server running on port " << PORT << endl;
+    cout<<"Server running on port "<<PORT<<endl;
 
     while(1)
     {
@@ -80,7 +80,7 @@ void *tcp_server(void *arg)
             if(valread <= 0)
                 break;
 
-            cout << "[RECEIVED] " << buffer << endl;
+            cout<<"[RECEIVED] "<<buffer<<endl;
 
             int priority = get_priority(buffer);
 

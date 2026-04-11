@@ -40,5 +40,23 @@
 
 ### Client Server Feature
 1. First the code in this repository should be run in one **system**.
-2. Then run the **client.cpp** on another device.  
-***Note: Both the devices should be connected to the same network and same target device. Delete or move the client.cpp while running on server side system.***
+2. Then run the **[client1](https://github.com/THEOPHILUSg48/Sim.git) & [client2](https://github.com/SupremeOne3000/fuel_door_qnx.git)** on two different devices.  
+***Note: All the devices should be connected to the same network and same target device. Run only one client device at a time to prevent Raspberry Pi from crashing.***
+
+### Components Used
+1. Raspberry Pi 4B 8GB RAM with 64GB SD Card.
+2. 3 laptops one for simulating as a server and two for simulating as sensors.
+
+### Concepts Used In This Project
+1. Priority inheritance
+2. Mutex Locking and Unlocking
+3. Multithreading
+4. Microkernel architecture
+5. POSIX timers
+6. IPC (Pulses & Message Passing)
+7. TCP/IP
+8. Sockets (Get & Put)
+9. Thread Scheduling (Round Robin)
+10. Priority Scheduling
+11. Client Server Architecture
+12. Thread Synchronization

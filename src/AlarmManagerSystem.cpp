@@ -4,8 +4,8 @@
 #include <sys/neutrino.h>
 #include "Alarm.h"
 
-pthread_mutex_t alarmmutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t printmutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t alarmmutex;
+pthread_mutex_t printmutex;
 
 int main()
 {
@@ -15,6 +15,18 @@ int main()
     pthread_t scheduler_thread;
 
     int chid = ChannelCreate(0);
+
+    pthread_mutexattr_t attr;
+
+    pthread_mutexattr_init(&attr);
+
+    pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
+
+    pthread_mutex_init(&alarmmutex, &attr);
+    pthread_mutex_init(&printmutex, &attr);
+    pthread_mutex_init(&queuemutex, &attr);
+
+    pthread_mutexattr_destroy(&attr);
 
     pthread_attr_t cli_attr;
     pthread_attr_t notify_attr;
@@ -37,10 +49,10 @@ int main()
     pthread_attr_setinheritsched(&cli_attr, PTHREAD_EXPLICIT_SCHED);
     pthread_attr_setinheritsched(&notify_attr, PTHREAD_EXPLICIT_SCHED);
 
-    pthread_create(&notify_thread, &notify_attr, notificationtask, &chid);
-    pthread_create(&cli_thread, &cli_attr, cli_loop, &chid);
     pthread_create(&server_thread, NULL, tcp_server, &chid);
     pthread_create(&scheduler_thread, NULL, scheduler, &chid);
+    pthread_create(&notify_thread, &notify_attr, notificationtask, &chid);
+    pthread_create(&cli_thread, &cli_attr, cli_loop, &chid);
 
     pthread_join(cli_thread, NULL);
     pthread_join(notify_thread, NULL);
